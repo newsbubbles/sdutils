@@ -29,6 +29,9 @@ from string import Template
 from random import sample
 
 import torch
+from torch import autocast
+from tqdm.auto import tqdm
+
 import PIL
 from PIL import Image
 import numpy as np
