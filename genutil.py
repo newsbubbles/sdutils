@@ -180,8 +180,6 @@ def generate_batch_videos(input_video, num_videos, prompt, strength=0.5, guidanc
 	ofv = output_folder + vidname + '/'
 
 	os.system('shred -n 40 -u ' + ofv + '/*')
-	if os.path.exists(sfv + '000001.png'):
-		os.rmdir(sfv)
 
 	for i, s in enumerate(seeds):
 
