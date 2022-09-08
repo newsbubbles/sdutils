@@ -112,7 +112,7 @@ def generate_video(input_path, prompt, seed=None, strength=0.5, guidance_scale=7
 	if not os.path.exists(input_path):
 		print('Path does not exist:', input_path)
 		return None
-	os.makedirs(output_folder)
+	os.makedirs(output_folder, exist_ok=True)
 	if not os.path.exists(scratch_folder):
 		os.makedirs(scratch_folder, exist_ok=True)
 		os.system('ffmpeg -i ' + input_path + ' ' + scratch_folder + '%06d.png')
@@ -170,9 +170,11 @@ def generate_batch_videos(input_video, num_videos, prompt, strength=0.5, guidanc
 	vidname = os.path.basename(input_video).split('.')[0]
 	sfv = scratch_folder + vidname + '/'
 	ofv = output_folder + vidname + '/'
+
 	os.system('shred -n 40 -u ' + ofv + '/*')
-	if os.path.exists(sfv + '000001.png'):
+	if not os.path.exists(sfv + '000001.png'):
 		os.rmdir(sfv)
+
 	for i, s in enumerate(seeds):
 
 		print('Generating Video', s, 'Number:', i, 'of', num_videos, 'strength_o:', strength)
