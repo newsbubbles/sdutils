@@ -33,7 +33,7 @@ import PIL
 from PIL import Image
 import numpy as np
 
-from ..promptgen import PromptGenerator
+from .promptgen import PromptGenerator
 
 def preprocess(image):
 		w, h = image.size
