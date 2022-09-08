@@ -64,20 +64,30 @@ scaffold.generate(
 ### Image2Image Generate Many Images with different seeds from one Image
 ```
 scaffold.generate(
-
+  img_path,
+  prompt,
+  num_seeds = 100
 )
 ```
 
 ### Video2Video Example
 ```
-scaffold.generate_video(
+video_path = 'path_to_some_video.mp4'
+map = { ... }
+prompt = PromptGenerator( ... )
 
+scaffold.generate_video(
+  video_path,
+  prompt
 )
 ```
 
 ### Batch Video2Video Example
 ```
+# Generate 10 different videos from one video
 scaffold.generate_batch_videos(
-
+  video_path,
+  10,
+  prompt
 )
 ```
