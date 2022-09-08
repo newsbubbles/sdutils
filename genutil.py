@@ -72,7 +72,6 @@ class Scaffold:
 
 	# Image2Image Generates and saves multiple images based on an input image or list of images and a list of seeds
 	def generate(self, image_path: str, prompt: PromptGenerator, strength=0.5, seeds=None, num_seeds=10, fileid=None, filename=None, guidance_scale=7.5, ext='jpg', overwrite_strength=False, images=None, output_folder='_out/', verbose=False):
-		global device, pipe, scheduler
 		if seeds is None:
 			seeds = sample(range(0, 999999999), num_seeds)
 		file_id = '' if fileid is None else str(fileid) + '_'
