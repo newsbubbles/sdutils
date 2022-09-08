@@ -112,9 +112,9 @@ def generate_video(input_path, prompt, seed=None, strength=0.5, guidance_scale=7
 	if not os.path.exists(input_path):
 		print('Path does not exist:', input_path)
 		return None
-	os.path.makedirs(output_folder)
+	os.makedirs(output_folder)
 	if not os.path.exists(scratch_folder):
-		os.path.makedirs(scratch_folder, exist_ok=True)
+		os.makedirs(scratch_folder, exist_ok=True)
 		os.system('ffmpeg -i ' + input_path + ' ' + scratch_folder + '%06d.png')
 
 	## load existing video attributes map
