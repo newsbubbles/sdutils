@@ -118,11 +118,11 @@ def generate_video(input_path, prompt, seed=None, strength=0.5, guidance_scale=7
 	if not os.path.exists(input_path):
 		print('Path does not exist:', input_path)
 		return None
-	os.makedirs(output_folder, exist_ok=True)
+	os.system('mkdir -p ' + output_folder)
 	input_f_exists = os.path.exists(scratch_folder)
 	print('scratch folder exists?', input_f_exists)
 	if not input_f_exists:
-		os.makedirs(scratch_folder, exist_ok=True)
+		os.system('mkdir -p ' + scratch_folder)
 		os.system('ffmpeg -i ' + input_path + ' ' + scratch_folder + '%06d.png')
 
 	## load existing video attributes map
@@ -164,7 +164,7 @@ def generate_video(input_path, prompt, seed=None, strength=0.5, guidance_scale=7
 
 	if make_thumbnail:
 		print('thumbs:', thumb_folder)
-		os.makedirs(thumb_folder, exist_ok=True)
+		os.system('mkdir -p ' + thumb_folder)
 		gifname = os.path.basename(out_path).split('.')[0]
 		gif_path = thumb_folder + gifname + '.gif'
 		print('gif path:', gif_path)
