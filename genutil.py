@@ -33,7 +33,13 @@ import PIL
 from PIL import Image
 import numpy as np
 
-from .promptgen import PromptGenerator
+try:
+	from promptgen import PromptGenerator
+except Exception as pe:
+	try:
+		from .promptgen import PromptGenerator
+	except:
+		pass
 
 def preprocess(image):
 		w, h = image.size
@@ -113,7 +119,9 @@ def generate_video(input_path, prompt, seed=None, strength=0.5, guidance_scale=7
 		print('Path does not exist:', input_path)
 		return None
 	os.makedirs(output_folder, exist_ok=True)
-	if not os.path.exists(scratch_folder):
+	input_f_exists = os.path.exists(scratch_folder)
+	print('scratch folder exists?', input_f_exists)
+	if not input_f_exists:
 		os.makedirs(scratch_folder, exist_ok=True)
 		os.system('ffmpeg -i ' + input_path + ' ' + scratch_folder + '%06d.png')
 
@@ -172,7 +180,7 @@ def generate_batch_videos(input_video, num_videos, prompt, strength=0.5, guidanc
 	ofv = output_folder + vidname + '/'
 
 	os.system('shred -n 40 -u ' + ofv + '/*')
-	if not os.path.exists(sfv + '000001.png'):
+	if os.path.exists(sfv + '000001.png'):
 		os.rmdir(sfv)
 
 	for i, s in enumerate(seeds):
