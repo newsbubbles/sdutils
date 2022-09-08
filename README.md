@@ -8,12 +8,13 @@ Note, this is by far not a finished technology and it will be continously improv
 * Image2Image generation witih seed control
 * Video2Video generation with seed control and overrides
 * Batch Processing for Image2Image and Video2Video - Get as many as you want from one input
-* 
+* Outputs all seeds, strengths and prompts generated into a file called vidmap.json
+* Stores all output videos and images with seed data and index number for easy association with stored map
 
 ## Coming Soon
 * Keyframes for video2video and prompt changes
 * Image/Video in-painting and out-painting
-* 
+* NFT Listing Capabilities for OpeanSea perhaps?
 
 `PromptGenerator` generates prompts based on possibilities you give it so that you can easily change out any word or phrase in your prompt with a random entry from a list of possibilities.  It makes prompt templates re-usable, just change the data to get different prompts
 
