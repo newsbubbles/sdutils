@@ -7,6 +7,7 @@ Note, this is by far not a finished technology and it will be continously improv
 ## Features
 * Image2Image generation witih seed control
 * Video2Video generation with seed control and overrides
+* Multiple Image to Multiple Image generation
 * Batch Processing for Image2Image and Video2Video - Get as many as you want from one input
 * Outputs all seeds, strengths and prompts generated into a file called vidmap.json
 * Stores all output videos and images with seed data and index number for easy association with stored map
