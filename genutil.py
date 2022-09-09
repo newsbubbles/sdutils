@@ -107,7 +107,7 @@ class Scaffold:
 						else:
 							_ich = ich
 						ichs = _ich.split('.')
-						im_ = self.load_image(_ich)
+						im_ = self.load_image(ichi)
 						uie = _ich
 						file_id = ichs[0] + '_'
 						input_path = ich
