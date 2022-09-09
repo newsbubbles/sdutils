@@ -70,20 +70,34 @@ class Scaffold:
 			print('NOT FOUND', fp)
 			return None
 
+	def load_index(self, file_path):
+		if not os.path.exists(file_path):
+			return []
+		else:
+			with open(file_path, 'r') as f:
+				r = json.load(f)
+			return r
+
+	def save_index(self, index_map, file_path):
+		with open(file_path, 'w+') as f:
+			json.dump(index_map, f)
+		return True		
+
 	# Image2Image Generates and saves multiple images based on an input image or list of images and a list of seeds
-	def generate(self, image_path: str, prompt: PromptGenerator, strength=0.5, seeds=None, num_seeds=10, fileid=None, filename=None, guidance_scale=7.5, ext='jpg', overwrite_strength=False, images=None, output_folder='_out/', verbose=False):
+	def generate(self, image_path: str, prompt: PromptGenerator, strength=0.5, seeds=None, num_seeds=10, fileid=None, filename=None, guidance_scale=7.5, ext='jpg', overwrite_strength=False, images=None, output_folder='_out/', verbose=False, image_index='map.json'):
 		if seeds is None:
 			seeds = sample(range(0, 999999999), num_seeds)
 		file_id = '' if fileid is None else str(fileid) + '_'
 		use_images = True if images is not None else False
 		print('use images:', use_images, 'strength_o:', strength)
+		index = self.load_index(image_index)
 		for i, s in enumerate(seeds):
 			generator = torch.Generator(device=self.device).manual_seed(s)
 			with autocast(self.device):
 					_prompt, _strength, _attr = prompt.generate()
 					if overwrite_strength:
 						_strength = strength
-					im_ = None
+					im_, ich = None, None
 					if use_images:
 						ichi = random.choice(images)
 						ich = os.path.basename(ichi)
@@ -96,6 +110,7 @@ class Scaffold:
 						im_ = self.load_image(_ich)
 						uie = _ich
 						file_id = ichs[0] + '_'
+						input_path = ich
 					if im_ is None:
 						im_ = self.load_image(image_path)
 						uie = ''
@@ -106,12 +121,14 @@ class Scaffold:
 					im = _im[0]
 					fn = file_id + str(i) + '_' + str(s) if filename is None else filename
 					im.save(output_folder + fn + '.' + ext)
+					index.append({'input': input_path if ich is None else ich, 'seed': s, 'strength': _strength, 'prompt': _prompt, 'attr': _attr})
+					self.save_index(index, image_index)
 
 	def video_to_gif(self, input_video, output_gif, scale=320, fps=15, loop=0):
 		os.system('ffmpeg -i ' + input_video + ' -vf "fps=' + str(fps) + ',scale=' + str(scale) + ':-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop ' + str(loop) + ' ' + output_gif)
 
 	# Video2Video Generates and saves a single output video from an input video
-	def generate_video(self, input_path, prompt, seed=None, strength=0.5, guidance_scale=7.5, strength_r=1.0, _start=0, frame_range=[0, 9999999999], scratch_folder='_in/', output_folder='_out/', override_strength=False, out_path=None, make_thumbnail=False, thumb_folder='thumbs/'):
+	def generate_video(self, input_path, prompt, seed=None, strength=0.5, guidance_scale=7.5, strength_r=1.0, _start=0, frame_range=[0, 9999999999], scratch_folder='_in/', output_folder='_out/', override_strength=False, out_path=None, make_thumbnail=False, thumb_folder='thumbs/', video_index='vidmap.json'):
 		if seed is None:
 			seeds = sample(range(0, 999999999), 1)
 			seed = seeds[0]
@@ -136,11 +153,8 @@ class Scaffold:
 			os.system('mkdir -p ' + scratch_folder)
 			os.system('ffmpeg -i ' + input_path + ' ' + scratch_folder + '%06d.png')
 
-		## load existing video attributes map
-		_lv = []
-		if os.path.exists('vidmap.json'):
-			with open('vidmap.json', 'r') as f:
-				_lv = json.load(f)
+		## load existing video attributes index
+		index = self.load_index(video_index)
 
 		# get the frame file names from the scratch folder
 		d = os.listdir(scratch_folder)
@@ -163,13 +177,13 @@ class Scaffold:
 					ext='png', 
 					guidance_scale=guidance_scale, 
 					overwrite_strength=True, 
-					output_folder=output_folder
+					output_folder=output_folder,
+					image_index=None,
 				)
 
 		## save attributes map
-		_lv.append((input_path, seed, _strength, _prompt, _attr))
-		with open('vidmap.json', 'w+') as f:
-			json.dump(_lv, f)
+		index.append({'input': input_path, 'seed': seed, 'strength': _strength, 'prompt': _prompt, 'attr': _attr})
+		self.save_index(index, video_index)
 
 		os.system('ffmpeg -i ' + output_folder + '%06d.png -c:v libx264 -vf fps=20 -pix_fmt yuv420p ' + out_path)
 
