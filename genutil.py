@@ -85,7 +85,8 @@ class Scaffold:
 						_strength = strength
 					im_ = None
 					if use_images:
-						ich = random.choice(images)
+						ichi = random.choice(images)
+						ich = os.path.basename(ichi)
 						if type(ich) is tuple:
 							_strength = ich[1]
 							_ich = ich[0]
