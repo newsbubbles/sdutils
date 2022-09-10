@@ -187,6 +187,14 @@ scaffold.generate_batch_videos(
 )
 ```
 
+## Notes about Video2Video and getting it just right
+
+If you use the strength override as arguments to the scaffold.generate_video and scaffold.generate_batch_videos functions, you can test around for the right `strength` for your set of prompt possibilities. This should help you find a good tradeoff between matching your prompt set more and being a choppy animation.
+
+For example: if you do strength 0.1 or around there, you can get really smooth video, but not much dreaming toward the prompt, whereas if you do 0.7 you can get a pretty choppy but still good video that matches your prompt much better.
+
+My suggestion is to use a video that approximates the same style and actions as you want to recreate with your prompts, AND to make the prompt possibilities mostly include things that are going to be very different, using the !! and (( syntax to aid this. That will allow you to keep your strength relatively down so that you get unique enough videos that are also not so choppy.
+
 ## Coming Soon
 * Keyframes for video2video and prompt changes
 * Image/Video in-painting and out-painting
