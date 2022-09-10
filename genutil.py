@@ -81,6 +81,8 @@ class Scaffold:
 			return r
 
 	def save_index(self, index_map, file_path):
+		if file_path is None:
+			return False
 		with open(file_path, 'w+') as f:
 			json.dump(index_map, f)
 		return True		
