@@ -100,6 +100,7 @@ class Scaffold:
 					if overwrite_strength:
 						_strength = strength
 					im_, ich = None, None
+					im_name = os.path.basename(image_path)
 					if use_images:
 						ichi = random.choice(images)
 						ich = os.path.basename(ichi)
@@ -123,7 +124,7 @@ class Scaffold:
 					im = _im[0]
 					fn = file_id + str(i) + '_' + str(s) if filename is None else filename
 					im.save(output_folder + fn + '.' + ext)
-					index.append({'input': input_path if ich is None else ich, 'seed': s, 'strength': _strength, 'scale': guidance_scale, 'prompt': _prompt, 'attr': _attr})
+					index.append({'input': im_name if ich is None else ich, 'seed': s, 'strength': _strength, 'scale': guidance_scale, 'prompt': _prompt, 'attr': _attr})
 					self.save_index(index, image_index)
 
 	def video_to_gif(self, input_video, output_gif, scale=320, fps=15, loop=0):
