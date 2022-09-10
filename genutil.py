@@ -71,6 +71,8 @@ class Scaffold:
 			return None
 
 	def load_index(self, file_path):
+		if file_path is None:
+			return []
 		if not os.path.exists(file_path):
 			return []
 		else:
@@ -121,7 +123,7 @@ class Scaffold:
 					im = _im[0]
 					fn = file_id + str(i) + '_' + str(s) if filename is None else filename
 					im.save(output_folder + fn + '.' + ext)
-					index.append({'input': input_path if ich is None else ich, 'seed': s, 'strength': _strength, 'prompt': _prompt, 'attr': _attr})
+					index.append({'input': input_path if ich is None else ich, 'seed': s, 'strength': _strength, 'scale': guidance_scale, 'prompt': _prompt, 'attr': _attr})
 					self.save_index(index, image_index)
 
 	def video_to_gif(self, input_video, output_gif, scale=320, fps=15, loop=0):
@@ -182,7 +184,7 @@ class Scaffold:
 				)
 
 		## save attributes map
-		index.append({'input': input_path, 'seed': seed, 'strength': _strength, 'prompt': _prompt, 'attr': _attr})
+		index.append({'input': input_path, 'seed': seed, 'strength': _strength, 'scale': guidance_scale, 'prompt': _prompt, 'attr': _attr})
 		self.save_index(index, video_index)
 
 		os.system('ffmpeg -i ' + output_folder + '%06d.png -c:v libx264 -vf fps=20 -pix_fmt yuv420p ' + out_path)
