@@ -82,6 +82,14 @@ class PromptGenerator:
 		self.last_output = (_prompt, _strength, m)
 		return self.last_output
 
+	def stats(self):
+		x = 1
+		l = len(self.keywords)
+		for k, v in self.keywords.items():
+			x *= len(v)
+		print(l, 'dimensions', x, 'unique possibilities')
+		return l, x
+
 if __name__ == "__main__":
 
 	'''## The keyword map ###
@@ -93,121 +101,45 @@ if __name__ == "__main__":
 		if a tuple is len 3, the third value is an extra text to be added at the end of the prompt
 		if a tuple is len 4, a negation matrix is passed which negates specific values in other keywords that should not be included in the final choice of values
 	'''
+	_prompt = 'A $height, $composure $sex $action $timeofday'
 
-	kws = {
-			'clothing': [
-					'neopunk',
-					'neonpunk',
-					'cyberpunk',
-					'solarpunk',
-					'tribalpunk',
-					'junglepunk',
-			],
-			'accessories': [
-					'a helmet',
-					'sunglasses',
-					'bracelets',
-					'military boots',
-					'a pleather jacket',
-					'fantasy gear',
-			],
-			'sex': [
-					'man',
-					'woman',
-					'cyborg man',
-					'cyborg woman',
-					'android man',
-					'android woman',
-			],
-			'timeofday': [
-					'night',
-					'sunset',
-			],
-			'place': [
-					'city',
-					'theme park',
-					'new york',
-					'los angeles',
-					'paris',
-					'tokyo',
-					'london',
-					'madrid',
-					'mumbai',
-					'new dehli',
-					'mexico city',
-					'bangkok',
-					'kuala lumpur',
-					'berlin',
-					'helsinki',
-					'marrakesh',
-					'seattle',
-					'megalopolis',
-					'megacity',
-					'taiwan',
-					'hong kong',
-					'beirut',
-					'johannesburg',
-			],
-			'placestyle': [
-					'alien',
-					'abandoned',
-					'!!neon-lit!!',
-					'busy',
-					'rusty',
-					'!!red district!! of',
-					'destroyed',
-					'burning',
-					'post-apocalyptic',
-					'desertified',
-			],
-			'background': [
-					'flying cars and spaceships',
-					'a suspended highway',
-					'a large avenue',
-					'a busy intersection',
-					'megastructures',
-					'weird architecture buildings',
-					'!!futuristic architecture!! buildings',
-					'a space port',
-					'a sea port with futuristic yachts and commercial boats',
-					'a desert',
-					'a jungle',
-					'an alien landscape',
-					'strange colored clouds',
-					'people stepping into futuristic flying vehicles',
-					'people walking across an intersection',
-					'nobody',
-			],
-			'realism': [
-					'ultra-realistic',
-					'realistic',
-					'movie still',
-			],
-			'media': [
-					'photo',
-					'Cycles Render',
-					'digital photo',
-
-			],
-			'photography': [
-					'aperture',
-					'autochrome',
-					'blue hour lighting',
-					'circular polarizer',
-					'depth of field 100mm',
-					'depth of field 270mm',
-					'hdr effect',
-					'high exposure', 
-					'rule of thirds',
-			],
+	data = {
+	  'height': [
+	    'tall',
+	    'short',
+	    'average height'
+	  ],
+	  'composure': [
+	    'fat',
+	    'skinny',
+	    'lanky',
+	    'fit',
+	    'muscular',
+	    'wide shouldered',
+	  ],
+	  'sex': [
+	    'man',
+	    'woman',
+	  ],
+	  'action': [
+	    'walking on a tightrope',
+	    'drinking a coffee',
+	    'playing soccer',
+	    'doing yoga',
+	    'on a trapese',
+	    'dressed as a clown',
+	  ],
+	  'timeofday': [
+	    'at night',
+	    'in the morning',
+	    'in the afternoon',
+	    'at dawn',
+	    'at sunset',
+	    'during a hailstorm',
+	  ],
 	}
 
-	# The prompt should explain the scene in the image with extra details as keywords
-	# it is a template that gets processed with a random sampling from the kw map space
-	# notice that it uses the dollar sign inf front of a key from the keyword map above to represent a part of the prompt
-	prompt = 'a $sex with $clothing clothing and $accessories standing in the middle of a street in a futuristic $placestyle $place at $timeofday with $background in the background. $photography photography. HD $media, !!$realism!!'
+	prompt = PromptGenerator(_prompt, data)
 
-	p_ = PromptGenerator(prompt, kws, strength=0.4)
-
-	for i in range(0, 3):
-		print(p_.generate())
+	for i in range(0, 10):
+	  print(prompt.generate())
