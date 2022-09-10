@@ -2,9 +2,10 @@
 
 Stable Diffusion General utilities wrapper including: Video to Video, Image to Image, Template Prompt Generation system and more, for use with any stable diffusion model.
 
-Note, this is by far not a finished technology and it will be continously improved upon. This was kept as modular as possible save for including torch code in the `genutils.generate` function.
+Note, this is by far not a finished project and it will be continously improved upon. This was kept as modular as possible save for including torch code in the `genutils.generate` function. I am doing this because as I use stable diffusion in code, I realize the need for specific things.
 
 ## Features
+* Easy prompt randomization
 * Image2Image generation witih seed control
 * Video2Video generation with seed control and overrides
 * Multiple Image to Multiple Image generation
@@ -12,20 +13,116 @@ Note, this is by far not a finished technology and it will be continously improv
 * Outputs all seeds, strengths and prompts generated into a file called vidmap.json
 * Stores all output videos and images with seed data and index number for easy association with stored map
 
-## Coming Soon
-* Keyframes for video2video and prompt changes
-* Image/Video in-painting and out-painting
-* NFT Listing Capabilities for OpeanSea perhaps?
+`PromptGenerator` *promptgen.py* a standalone class that generates prompts based on possibilities you give it so that you can easily change out any word or phrase in your prompt with a random entry from a list of possibilities.  It makes prompt templates re-usable, just change the data to get different prompts
 
-`PromptGenerator` generates prompts based on possibilities you give it so that you can easily change out any word or phrase in your prompt with a random entry from a list of possibilities.  It makes prompt templates re-usable, just change the data to get different prompts
+`Scaffold` *genutils.py* a standalone class that holds all the utility functions and takes a (device, scheduler, pipe) from the torch environment thus wrapping the initial Stable Diffusion functionality and utility functions into one class, and expanding on that functionality with a Video2Video function, and batching.
 
-`Scaffold` holds all the util functions and takes a (device, scheduler, pipe) from the torch environment thus wrapping the initial Stable Diffusion functionality and utility functions into one class, and expanding on that functionality with a Video2Video function, and batching
+*sdunlock.py* includes an unlocked version of the pipelines for Text to Image and Image to Image.
 
-Takes just a map of possible attributes and a prompt template including those attribute variables into a prompt.
+## The greatest standalone feature here: PromptGenerator
+
+This is a unique (afaik) way to separate your data you want to rotate/randomize in your prompt and your prompt itself.
+
+Imagine you have a prompt:  
+```
+_prompt = 'A tall, skinny man walking along a tight rope at night.'
+```
+
+But you want to have options for how the man looks, what he's doing and when, plus you want Stable Diffusion to render from those options randomly or in a rotating fashion. Let's even go so far as to say you want that to be different on every new image you render.  What do you do?  You make your prompt like this:
+```
+_prompt = 'A $height, $composure $sex $action $timeofday'
+```
+
+Then you give your prompt what to fill in for that template
+```
+data = {
+  'height': [
+    'tall',
+    'short',
+    'average height'
+  ],
+  'composure': [
+    'fat',
+    'skinny',
+    'lanky',
+    'fit',
+    'muscular',
+    'wide shouldered',
+  ],
+  'sex': [
+    'man',
+    'woman',
+  ],
+  'action': [
+    'walking on a tightrope',
+    'drinking a coffee',
+    'playing soccer',
+    'doing yoga',
+    'on a trapese',
+    'dressed as a clown',
+  ],
+  'timeofday': [
+    'at night',
+    'in the morning',
+    'in the afternoon',
+    'at dawn',
+    'at sunset',
+    'during a hailstorm',
+  ],
+}
+```
+
+Add it to a prompt generator object
+```
+prompt = PromptGenerator(_prompt, data)
+```
+
+Then every time you call prompt.generate() function it will give you a new generated text prompt
+```
+for i in range(0, 10):
+  print(prompt.generate())
+```
+
+This should output something along these lines:
+```
+('A average height, fat woman walking on a tightrope during a hailstorm', 0.5, {'height': 'average height', 'composure': 'fat', 'sex': 'woman', 'action': 'walking on a tightrope', 'timeofday': 'during a hailstorm'})
+
+('A tall, fat woman dressed as a clown in the morning', 0.5, {'height': 'tall', 'composure': 'fat', 'sex': 'woman', 'action': 'dressed as a clown', 'timeofday': 'in the morning'})
+
+('A short, skinny woman on a trapese at dawn', 0.5, {'height': 'short', 'composure': 'skinny', 'sex': 'woman', 'action': 'on a trapese', 'timeofday': 'at dawn'})
+
+('A short, fit woman walking on a tightrope at sunset', 0.5, {'height': 'short', 'composure': 'fit', 'sex': 'woman', 'action': 'walking on a tightrope', 'timeofday': 'at sunset'})
+
+('A tall, fat woman drinking a coffee at sunset', 0.5, {'height': 'tall', 'composure': 'fat', 'sex': 'woman', 'action': 'drinking a coffee', 'timeofday': 'at sunset'})
+
+('A average height, wide shouldered man drinking a coffee at dawn', 0.5, {'height': 'average height', 'composure': 'wide shouldered', 'sex': 'man', 'action': 'drinking a coffee', 'timeofday': 'at dawn'})
+
+('A tall, fat man dressed as a clown at night', 0.5, {'height': 'tall', 'composure': 'fat', 'sex': 'man', 'action': 'dressed as a clown', 'timeofday': 'at night'})
+
+('A tall, wide shouldered woman drinking a coffee at dawn', 0.5, {'height': 'tall', 'composure': 'wide shouldered', 'sex': 'woman', 'action': 'drinking a coffee', 'timeofday': 'at dawn'})
+
+('A tall, fat man doing yoga at sunset', 0.5, {'height': 'tall', 'composure': 'fat', 'sex': 'man', 'action': 'doing yoga', 'timeofday': 'at sunset'})
+
+('A average height, wide shouldered woman walking on a tightrope at sunset', 0.5, {'height': 'average height', 'composure': 'wide shouldered', 'sex': 'woman', 'action': 'walking on a tightrope', 'timeofday': 'at sunset'})
 
 ```
-# make sure to have your device, scheduler and pipe declare in your torch code, then put them in the scaffold ...
 
+The tuple that `prompt.generate()` outputs is `(prompt, strength, data_map)`
+
+* `prompt` - The prompt string to feed to your diffusion model
+* `strength` - For use with img2img and video2video
+* `data_map` - You can use this if you want to store the attributes of your creations in an index file for instance, this is used in `Scaffold` for example
+
+## How to use PromptGenerator and Scaffold with Stable Diffusion
+
+First thing first, you have to include the libraries
+```
+from promptgen import PromptGenerator
+from genutils import Scaffold
+```
+
+Make sure to have your `device`, `scheduler` and `pipe` declared in your torch code, then put them in the scaffold ...
+```
 scaffold = Scaffold(device, scheduler, pipe)
 ```
 
@@ -39,15 +136,11 @@ map = {
 }
 prompt = PromptGenerator('A self portrait of a $attribute1 $attribute2 person', map)
 ```
+
 What about getting a text prompt from this?
 ```
-text_prompt = prompt.generate()
+text_prompt, strength, prompt_data = prompt.generate()
 
-# would output from above example:
-#   A self portrait of a tall legged person
-#   A self portrait of a lumpy headed person
-#   ...
-# for every time you call the generate function you get a different result based on values from the map
 ```
 
 ## Examples
@@ -93,3 +186,8 @@ scaffold.generate_batch_videos(
   prompt
 )
 ```
+
+## Coming Soon
+* Keyframes for video2video and prompt changes
+* Image/Video in-painting and out-painting
+
