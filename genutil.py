@@ -133,7 +133,7 @@ class Scaffold:
 		os.system('ffmpeg -i ' + input_video + ' -vf "fps=' + str(fps) + ',scale=' + str(scale) + ':-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop ' + str(loop) + ' ' + output_gif)
 
 	# Video2Video Generates and saves a single output video from an input video
-	def generate_video(self, input_path, prompt, seed=None, strength=0.5, guidance_scale=7.5, strength_r=1.0, _start=0, frame_range=[0, 9999999999], scratch_folder='_in/', output_folder='_out/', override_strength=False, out_path=None, make_thumbnail=False, thumb_folder='thumbs/', video_index='vidmap.json'):
+	def generate_video(self, input_path, prompt, seed=None, strength=0.5, guidance_scale=7.5, strength_r=1.0, _start=0, frame_range=[0, 9999999999], scratch_folder='_in/', output_folder='_out/', override_strength=False, out_path=None, make_thumbnail=False, thumb_folder='thumbs/', video_index='vidmap.json', fps=20, thumb_fps=15):
 		if seed is None:
 			seeds = sample(range(0, 999999999), 1)
 			seed = seeds[0]
@@ -190,7 +190,7 @@ class Scaffold:
 		index.append({'input': input_path, 'seed': seed, 'strength': _strength, 'scale': guidance_scale, 'prompt': _prompt, 'attr': _attr})
 		self.save_index(index, video_index)
 
-		os.system('ffmpeg -i ' + output_folder + '%06d.png -c:v libx264 -vf fps=20 -pix_fmt yuv420p ' + out_path)
+		os.system('ffmpeg -i ' + output_folder + '%06d.png -c:v libx264 -vf fps=' + str(fps) + ' -pix_fmt yuv420p ' + out_path)
 
 		if make_thumbnail:
 			print('thumbs:', thumb_folder)
@@ -198,11 +198,11 @@ class Scaffold:
 			gifname = os.path.basename(out_path).split('.')[0]
 			gif_path = thumb_folder + gifname + '.gif'
 			print('gif path:', gif_path)
-			self.video_to_gif(out_path, gif_path)
+			self.video_to_gif(out_path, gif_path, fps=thumb_fps)
 
 	## Video2Videos Multiple videos from one video ##
 
-	def generate_batch_videos(self, input_video, num_videos, prompt, strength=0.5, guidance_scale=7.5, seeds=None, scratch_folder='_in/', output_folder='_out/', frame_range=None, make_thumbnails=False):
+	def generate_batch_videos(self, input_video, num_videos, prompt, strength=0.5, guidance_scale=7.5, seeds=None, scratch_folder='_in/', output_folder='_out/', frame_range=None, make_thumbnails=False, fps=20, thumb_fps=15):
 		seeds = seeds if seeds is not None else sample(range(0, 999999999), num_videos)
 		frame_range = frame_range if frame_range is not None else (0, 9999999999)
 		vidname = os.path.basename(input_video).split('.')[0]
@@ -226,6 +226,8 @@ class Scaffold:
 					scratch_folder=sfv,
 					output_folder=ofv,
 					make_thumbnail=make_thumbnails,
+					fps=fps,
+					thumb_fps=thumb_fps,
 			)
 
 
