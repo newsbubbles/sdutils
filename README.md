@@ -187,6 +187,28 @@ scaffold.generate_batch_videos(
 )
 ```
 
+### Prompts that change at Keyframes using PromptGenerator
+```python
+# Make a bunch of videos with different subjects and the same sequence of scenes
+map = {
+  'aspect': ['hairy', 'hairless', 'suspicious looking', 'happy'],
+  'creature': ['chinchilla', 'armadillo', 'cockatil', 'ferret', 'rooster']
+}
+
+prompt = PromptGenerator({
+  0: 'a $aspect $creature walking on a tightrope. wide angle shot from the side.',
+  122: 'a $aspect $creature falling in the air tumbling. wide angle shot from below.',
+  184: 'a $aspect $creature falling into a small drinking glass.',
+  192: 'a $aspect $creature squished inside a small drinking glass.'
+}, map)
+
+scaffold.generate_batch_videos(
+  video_path,
+  100,
+  prompt
+)
+```
+
 ## Notes about Video2Video and getting it just right
 
 If you use the strength override as arguments to the scaffold.generate_video and scaffold.generate_batch_videos functions, you can test around for the right `strength` for your set of prompt possibilities. This should help you find a good tradeoff between matching your prompt set more and being a choppy animation.
@@ -196,6 +218,6 @@ For example: if you do strength 0.1 or around there, you can get really smooth v
 My suggestion is to use a video that approximates the same style and actions as you want to recreate with your prompts, AND to make the prompt possibilities mostly include things that are going to be very different, using the !! and (( syntax to aid this. That will allow you to keep your strength relatively down so that you get unique enough videos that are also not so choppy.
 
 ## Coming Soon
-* Keyframes for video2video and prompt changes
+* K_Euler sampler reversal trick for Video2Video consistency
 * Image/Video in-painting and out-painting
 
