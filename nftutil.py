@@ -20,7 +20,6 @@ class NFTDataMapper:
 
 	# retrieve a value from the data or from data.attr and perform value transcription if necessary
 	def get(self, key):
-		print('get', key)
 		if key is None:
 			return ''
 		o = ''
@@ -36,7 +35,6 @@ class NFTDataMapper:
 
 	# retrieve a key from the attribute key map
 	def _attr(self, key):
-		print('attr', key)
 		if self.map is None:
 			return key
 		if key in self.map:
