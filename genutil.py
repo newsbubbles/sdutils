@@ -88,7 +88,7 @@ class Scaffold:
 		return True		
 
 	# Image2Image Generates and saves multiple images based on an input image or list of images and a list of seeds
-	def generate(self, image_path: str, prompt: PromptGenerator, strength=0.5, seeds=None, num_seeds=10, fileid=None, filename=None, guidance_scale=7.5, ext='jpg', overwrite_strength=False, images=None, output_folder='_out/', verbose=False, image_index='map.json'):
+	def generate(self, image_path: str, prompt: PromptGenerator, strength=0.5, seeds=None, num_seeds=10, fileid=None, filename=None, guidance_scale=7.5, ext='jpg', overwrite_strength=False, images=None, output_folder='_out/', verbose=False, image_index='map.json', frame=None):
 		if seeds is None:
 			seeds = sample(range(0, 999999999), num_seeds)
 		file_id = '' if fileid is None else str(fileid) + '_'
@@ -98,7 +98,7 @@ class Scaffold:
 		for i, s in enumerate(seeds):
 			generator = torch.Generator(device=self.device).manual_seed(s)
 			with autocast(self.device):
-					_prompt, _strength, _attr = prompt.generate()
+					_prompt, _strength, _attr = prompt.generate(frame=frame)
 					if overwrite_strength:
 						_strength = strength
 					im_, ich = None, None
@@ -184,6 +184,7 @@ class Scaffold:
 					overwrite_strength=True, 
 					output_folder=output_folder,
 					image_index=None,
+					frame=i,
 				)
 
 		## save attributes map

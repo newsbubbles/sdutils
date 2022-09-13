@@ -15,13 +15,23 @@ class PromptGenerator:
 
 	def __init__(self, prompt, kws, default_strength=0.5, frozen=False):
 		self.prompt = prompt
-		self.template = Template(prompt)
+		self.cur_prompt = None
+		self.is_multiprompt = True if type(prompt) is dict else False
+		if self.is_multiprompt:
+			u = self.update(0)
+			if not u:
+				print('Warning: multi-prompt should have an initial prompt at frame 0')
+		else:
+			self.set_template(prompt)
 		self.keywords = kws
 		self.strength = default_strength
 		self.last_output = None
 		self.frozen = frozen
 		print(self.keywords)
 		print(self.prompt)
+
+	def set_template(self, prompt):
+		self.template = Template(prompt)
 
 	def freeze(self):
 		self.frozen = True
@@ -65,13 +75,29 @@ class PromptGenerator:
 		# x is a value which, if set, will be the extra text from the tuple in the value
 		return o, _m, b, x
 
-	def generate(self, force=False):
-		# return frozen output if required
-		if not force:
-			if self.frozen and self.last_output is not None:
-				return self.last_output
+	def update(self, frame):
+		if frame in self.prompt:
+			v = self.prompt[frame]
+			self.set_template(v)
+			return True
+		else:
+			return False
 
-		m, _m, _b, x = self.get_map()
+	def generate(self, force=False, frame=None):
+		# if frame is used, change current prompt if frame is passed
+		if frame is not None and self.is_multiprompt:
+			self.update(frame)
+
+		# return frozen output if required
+		m = None
+		if not force:
+			if self.frozen and self.last_output is not None :
+				m, _m, _b, x = self.last_output
+
+		if m is None:
+			m, _m, _b, x = self.get_map()
+
+		self.last_output = (m, _m, _b, x)
 
 		#translate to final prompt and strength
 		_strength = _m
@@ -79,8 +105,7 @@ class PromptGenerator:
 		_prompt = self.template.substitute(**m) + _extra
 		_prompt = _prompt.strip()
 
-		self.last_output = (_prompt, _strength, m)
-		return self.last_output
+		return (_prompt, _strength, m)
 
 	def stats(self):
 		x = 1
@@ -101,7 +126,10 @@ if __name__ == "__main__":
 		if a tuple is len 3, the third value is an extra text to be added at the end of the prompt
 		if a tuple is len 4, a negation matrix is passed which negates specific values in other keywords that should not be included in the final choice of values
 	'''
-	_prompt = 'A $height, $composure $sex $action $timeofday'
+	_prompt = {
+		0: 'A $height, $composure $sex $action $timeofday',
+		4: 'A $composure $sex $action in a box'
+	}
 
 	data = {
 	  'height': [
@@ -142,4 +170,4 @@ if __name__ == "__main__":
 	prompt = PromptGenerator(_prompt, data)
 
 	for i in range(0, 10):
-	  print(prompt.generate())
+	  print(prompt.generate(frame=i))
