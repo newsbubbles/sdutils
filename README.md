@@ -24,17 +24,17 @@ Note, this is by far not a finished project and it will be continously improved 
 This is a unique (afaik) way to separate your data you want to rotate/randomize in your prompt and your prompt itself.
 
 Imagine you have a prompt:  
-```
+```python
 _prompt = 'A tall, skinny man walking along a tight rope at night.'
 ```
 
 But you want to have options for how the man looks, what he's doing and when, plus you want Stable Diffusion to render from those options randomly or in a rotating fashion. Let's even go so far as to say you want that to be different on every new image you render.  What do you do?  You make your prompt like this:
-```
+```python
 _prompt = 'A $height, $composure $sex $action $timeofday'
 ```
 
 Then you give your prompt what to fill in for that template
-```
+```python
 data = {
   'height': [
     'tall',
@@ -73,18 +73,18 @@ data = {
 ```
 
 Add it to a prompt generator object
-```
+```python
 prompt = PromptGenerator(_prompt, data)
 ```
 
 Then every time you call prompt.generate() function it will give you a new generated text prompt
-```
+```python
 for i in range(0, 10):
   print(prompt.generate())
 ```
 
 This should output something along these lines:
-```
+```python
 ('A average height, fat woman walking on a tightrope during a hailstorm', 0.5, {'height': 'average height', 'composure': 'fat', 'sex': 'woman', 'action': 'walking on a tightrope', 'timeofday': 'during a hailstorm'})
 
 ('A tall, fat woman dressed as a clown in the morning', 0.5, {'height': 'tall', 'composure': 'fat', 'sex': 'woman', 'action': 'dressed as a clown', 'timeofday': 'in the morning'})
@@ -116,19 +116,19 @@ The tuple that `prompt.generate()` outputs is `(prompt, strength, data_map)`
 ## How to use PromptGenerator and Scaffold with Stable Diffusion
 
 First thing first, you have to include the libraries
-```
+```python
 from promptgen import PromptGenerator
 from genutils import Scaffold
 ```
 
 Make sure to have your `device`, `scheduler` and `pipe` declared in your torch code, then put them in the scaffold ...
-```
+```python
 scaffold = Scaffold(device, scheduler, pipe)
 ```
 
 ## Prompt Generation and data setup
 Setting up a new Prompt with different possible outputs
-```
+```python
 map = {
   'attribute1': ['tall', 'short', 'lumpy'],
   'attribute2': ['headed', 'framed', 'legged'],
@@ -138,7 +138,7 @@ prompt = PromptGenerator('A self portrait of a $attribute1 $attribute2 person', 
 ```
 
 What about getting a text prompt from this?
-```
+```python
 text_prompt, strength, prompt_data = prompt.generate()
 
 ```
@@ -146,7 +146,7 @@ text_prompt, strength, prompt_data = prompt.generate()
 ## Examples
 
 ### Image2Image Example generating 1 image with a random seed
-```
+```python
 img_path = 'path_to_some_image.jpg'
 
 scaffold.generate(
@@ -157,7 +157,7 @@ scaffold.generate(
 ```
 
 ### Image2Image Generate Many Images with different seeds from one Image
-```
+```python
 scaffold.generate(
   img_path,
   prompt,
@@ -166,7 +166,7 @@ scaffold.generate(
 ```
 
 ### Video2Video Example
-```
+```python
 video_path = 'path_to_some_video.mp4'
 map = { ... }
 prompt = PromptGenerator( ... )
@@ -178,7 +178,7 @@ scaffold.generate_video(
 ```
 
 ### Batch Video2Video Example
-```
+```python
 # Generate 10 different videos from one video
 scaffold.generate_batch_videos(
   video_path,
