@@ -1,11 +1,12 @@
-# sdutils: Stable Diffusion Utility Wrapper
+# SDUtils: Stable Diffusion Utility Wrapper
 
 Stable Diffusion General utilities wrapper including: Video to Video, Image to Image, Template Prompt Generation system and more, for use with any stable diffusion model.
 
 Note, this is by far not a finished project and it will be continously improved upon. This was kept as modular as possible save for including torch code in the `genutils.generate` function. I am doing this because as I use stable diffusion in code, I realize the need for specific things.
 
 ## Features
-* Easy prompt randomization
+* Easy prompt randomization through templating
+* Keyframe base prompt updates
 * Image2Image generation witih seed control
 * Video2Video generation with seed control and overrides
 * Multiple Image to Multiple Image generation
