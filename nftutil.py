@@ -55,9 +55,9 @@ class NFTDataMapper:
 		attr = []
 		for k, v in self.data['attr'].items():
 			if self.filter(k):
-				attr.append({'trait_type': k, 'value': self.attr(k)})
+				attr.append({'trait_type': self._attr(k), 'value': self.get(k)})
 		o = {
-			'description': self.attr('description'),
+			'description': self.get('description'),
 			'external_url': self.url,
 			'image': self.asset_url,
 			'name': self.name,
