@@ -216,7 +216,21 @@ If you use the strength override as arguments to the scaffold.generate_video and
 
 For example: if you do strength 0.1 or around there, you can get really smooth video, but not much dreaming toward the prompt, whereas if you do 0.7 you can get a pretty choppy but still good video that matches your prompt much better.
 
-My suggestion is to use a video that approximates the same style and actions as you want to recreate with your prompts, AND to make the prompt possibilities mostly include things that are going to be very different, using the !! and (( syntax to aid this. That will allow you to keep your strength relatively down so that you get unique enough videos that are also not so choppy.
+My suggestion is to use a video that approximates the same style and actions as you want to recreate with your prompts, AND to make the prompt possibilities mostly include things that are going to be very different, using the !! and (( syntax to aid this. That will allow you to keep your strength relatively down so that you get unique enough videos that are also not so choppy. 
+
+This entire thing will be fixed by the upcoming integration of /u/aqwis's gist code with the K_Euler sampler reversal.  This should allow you to bring strength down and also still be able to get a proper match for each frame of the video as far as it's noise.  The one downside to this new method is the elimination of the "seed" parameter being replaced by noise which most matches the initial input image for each frame. This should not be such a problem. If you have enough possibilities in your PromptGenerator map space (you can see this by running the `prompt.stats()` function,) you should not have to worry about creating enough video variations using seeds.  The stats function will tell you how many possibilities your prompt template and data will create.
+
+## Yes, Yes, There is an NFTUtil now...
+
+Look, I know that SD people in reddit and NFT people in reddit don't get along but we're on **github** now and this is a utility library that I hope to make into a multi-stack library. This means you should be able to, with a few lines of code, do everything from generating, upscaling, cropping, batching, launching an NFT collection on IPFS with full metadata control in one run.  This is just the first direction of a stack that I have taken. Each class of this repository shoudl work standalone or with minimal in-library requirements.  Imagine in the near future when we've got this building entire landing pages from a prompt. SD and other LDMs are going to interrupt so many industries that I'm amazed it has gotten this far as an open source project. Anywho, sure, NFTs are whatever you want them to be, and here, you can make a collection of 10,000 of these in about 60 Google Colab hours.
+
+**TLDR;** Leave politic to reddit.
+
+### Using the NFTUtil class in your workflows
+```python
+# example coming soon
+```
+
 
 ## Coming Soon
 * K_Euler sampler reversal trick for Video2Video consistency
